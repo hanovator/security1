@@ -3,6 +3,8 @@ package com.han.security1.controller;
 import com.han.security1.model.User;
 import com.han.security1.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,7 +22,7 @@ public class IndexController {
 
     @GetMapping({"","/"})
     public String index(){
-        return "index";
+        return "loginForm";
     }
 
     @GetMapping("/user")
@@ -30,7 +32,7 @@ public class IndexController {
 
     @GetMapping("/admin")
     public @ResponseBody String admin(){
-        return "user";
+        return "admin";
     }
 
     @GetMapping("/manager")
@@ -54,6 +56,18 @@ public class IndexController {
         user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
         userRepository.save(user); // 패스워드가 암호화되어있지 않기때문에 시큐리티 로그인이 안된다.
         return "redirect:/loginForm";
+    }
+
+    @Secured("ROLE_ADMIN")
+    @GetMapping("/adminInfo")
+    public @ResponseBody String info(){
+        return "어드민 개인정보";
+    }
+
+    @PreAuthorize("hasRole('ROLE_MANAGER') or hasRole('ROLE_ADMIN')")
+    @GetMapping("/managerData")
+    public @ResponseBody String data(){
+        return "매니저 데이터";
     }
 
 }
