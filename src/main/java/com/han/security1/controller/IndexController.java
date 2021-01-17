@@ -1,11 +1,16 @@
 package com.han.security1.controller;
 
+import com.han.security1.config.auth.PrincipalDetails;
 import com.han.security1.model.User;
 import com.han.security1.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -26,7 +31,8 @@ public class IndexController {
     }
 
     @GetMapping("/user")
-    public @ResponseBody String user(){
+    public @ResponseBody String user(@AuthenticationPrincipal PrincipalDetails principalDetails){
+        System.out.println("principalDetails -- "+principalDetails.getUser());
         return "user";
     }
 
@@ -68,6 +74,22 @@ public class IndexController {
     @GetMapping("/managerData")
     public @ResponseBody String data(){
         return "매니저 데이터";
+    }
+
+    @GetMapping("/test/login")
+    public @ResponseBody String testLogin(Authentication authentication,
+                                          @AuthenticationPrincipal PrincipalDetails userDetails ){
+        System.out.println("getPrincipal ----"+authentication.getPrincipal());
+        PrincipalDetails principalDetails = (PrincipalDetails) authentication.getPrincipal();
+        System.out.println("getUser -- "+principalDetails.getUser());
+        return "세션정보 확인";
+    }
+
+    @GetMapping("/test/oauth/login")
+    public @ResponseBody String oauthTestLogin(Authentication authentication,
+                                               @AuthenticationPrincipal OAuth2User oAuthUser){
+        OAuth2User oAuth2User = (OAuth2User) authentication.getPrincipal();
+        return "oauth 세션정보 확인";
     }
 
 }

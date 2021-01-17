@@ -36,3 +36,6 @@ spring:
             scope:
               - email
               - profile
+
+com:
+  password: goopass1!##$
